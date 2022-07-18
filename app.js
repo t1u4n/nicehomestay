@@ -4,11 +4,17 @@ const path = require('path');
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError");
+
 const homestayRoute = require("./routes/homestay");
 const reviewRoute = require("./routes/reviews");
+const userRoute = require('./routes/users');
+
 const session = require('express-session');
 const flash = require('connect-flash');
 
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models/user');
 
 mongoose.connect('mongodb://localhost:27017/great-homestay')
 
@@ -41,14 +47,32 @@ const sessionConfig = {
 app.use(session(sessionConfig));
 app.use(flash());
 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use((req, res, next) => {
+    if(!['/login', '/', '/register'].includes(req.originalUrl)){
+        req.session.returnTo = req.originalUrl;
+    }
+    res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     next();
 })
 
+app.get('/fakeUser', async (req, res) => {
+    const user = new User({ email: 'Tian@illinois.edu', username: 'Tian'});
+    const newUser = await User.register(user, 'monkey');
+    res.send(newUser);
+})
+
 app.use('/homestay', homestayRoute);
 app.use('/homestay/:id/reviews', reviewRoute);
+app.use('/', userRoute);
 
 app.get("/", (req, res) => {
     res.render("home");

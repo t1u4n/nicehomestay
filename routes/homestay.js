@@ -4,7 +4,7 @@ const catchAsync = require("../utils/catchAsync");
 const Homestay = require('../models/homestay');
 const ExpressError = require("../utils/ExpressError");
 const { homestaySchema } = require("../schemas");
-
+const { isLoggedIn } = require('../middleware');
 
 const validateHomestay = (req, res, next) => {
     const { error } = homestaySchema.validate(req.body);
@@ -21,7 +21,7 @@ router.get('/', catchAsync(async (req, res) => {
     res.render('./homestay/index', { homestay });
 }))
 
-router.get('/new', (req, res) => {
+router.get('/new', isLoggedIn, (req, res) => {
     res.render('homestay/new');
 })
 
@@ -35,7 +35,7 @@ router.get('/:id', catchAsync(async (req, res) => {
     res.render('homestay/show', { homestay });
 }))
 
-router.post('/', validateHomestay, catchAsync(async (req, res) => {
+router.post('/', isLoggedIn, validateHomestay, catchAsync(async (req, res) => {
     // if(!req.body.homestay) throw new ExpressError('Invalid Homestay', 400);
     const homestay = new Homestay(req.body.homestay);
     await homestay.save();
@@ -43,7 +43,7 @@ router.post('/', validateHomestay, catchAsync(async (req, res) => {
     res.redirect(`/homestay/${homestay._id}`);
 }))
 
-router.get('/:id/edit', catchAsync(async (req, res) => {
+router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
     const homestay = await Homestay.findById(id);
     if(!homestay){
@@ -53,14 +53,14 @@ router.get('/:id/edit', catchAsync(async (req, res) => {
     res.render('homestay/edit', { homestay });
 }))
 
-router.put('/:id', validateHomestay, catchAsync(async (req, res) => {
+router.put('/:id', isLoggedIn, validateHomestay, catchAsync(async (req, res) => {
     const { id } = req.params;
     const homestay = await Homestay.findByIdAndUpdate(id, { ...req.body.homestay }, { new : true});
     req.flash('success', 'Successfully update homestay!')
     res.redirect(`/homestay/${homestay._id}`);
 }))
 
-router.delete('/:id', catchAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
     await Homestay.findByIdAndDelete(req.params.id);
     req.flash('success', 'Successfully deleted a homestay!');
     res.redirect('/homestay');
