@@ -2,68 +2,22 @@ const express = require("express");
 const router = express.Router();
 const catchAsync = require("../utils/catchAsync");
 const Homestay = require('../models/homestay');
-const ExpressError = require("../utils/ExpressError");
 const { homestaySchema } = require("../schemas");
-const { isLoggedIn } = require('../middleware');
+const { isLoggedIn, isAuthor, validateHomestay } = require('../middleware');
+const { populate } = require("../models/homestay");
+const homestayController = require('../controllers/homestay');
 
-const validateHomestay = (req, res, next) => {
-    const { error } = homestaySchema.validate(req.body);
-    if(error){
-        const msg = error.details.map(el => el.message).join(",");
-        throw new ExpressError(msg, 400);
-    } else {
-        next();
-    }
-}
+router.route('/')
+    .get(catchAsync(homestayController.index))
+    .post(isLoggedIn, validateHomestay, catchAsync(homestayController.createHomestay))
 
-router.get('/', catchAsync(async (req, res) => {
-    const homestay = await Homestay.find({});
-    res.render('./homestay/index', { homestay });
-}))
+router.get('/new', isLoggedIn, homestayController.renderNewForm);
 
-router.get('/new', isLoggedIn, (req, res) => {
-    res.render('homestay/new');
-})
+router.route('/:id')
+    .get(catchAsync(homestayController.showHomestay))
+    .put(isLoggedIn, isAuthor, validateHomestay, catchAsync(homestayController.updateHomestay))
+    .delete(isLoggedIn, isAuthor, catchAsync(homestayController.deleteHomestay))
 
-router.get('/:id', catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const homestay = await Homestay.findById(id).populate('reviews');
-    if(!homestay){
-        req.flash('error', 'Cannot find that homestay!');
-        res.redirect('/homestay');
-    }
-    res.render('homestay/show', { homestay });
-}))
-
-router.post('/', isLoggedIn, validateHomestay, catchAsync(async (req, res) => {
-    // if(!req.body.homestay) throw new ExpressError('Invalid Homestay', 400);
-    const homestay = new Homestay(req.body.homestay);
-    await homestay.save();
-    req.flash('success', 'Successfully made a new campground!');
-    res.redirect(`/homestay/${homestay._id}`);
-}))
-
-router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const homestay = await Homestay.findById(id);
-    if(!homestay){
-        req.flash('error', 'Cannot find that homestay!');
-        res.redirect('/homestay');
-    }
-    res.render('homestay/edit', { homestay });
-}))
-
-router.put('/:id', isLoggedIn, validateHomestay, catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const homestay = await Homestay.findByIdAndUpdate(id, { ...req.body.homestay }, { new : true});
-    req.flash('success', 'Successfully update homestay!')
-    res.redirect(`/homestay/${homestay._id}`);
-}))
-
-router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
-    await Homestay.findByIdAndDelete(req.params.id);
-    req.flash('success', 'Successfully deleted a homestay!');
-    res.redirect('/homestay');
-}))
+router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(homestayController.renderEditForm));
 
 module.exports = router;
