@@ -3,7 +3,7 @@
 
 <div class="row">
     <div class="col-6">
-
+        
         <div id="homestayCarousel" class="carousel slide" data-ride="carousel">
             <div class="carousel-inner">
                 <% homestay.image.forEach((img, i) => {  %>
@@ -49,6 +49,8 @@
         </div>
     </div>
     <div class="col-6">
+        <div id='map' style='width: 400px; height: 300px;'></div>
+
         <% if(currentUser) {%> 
         <h2>Leave a Review</h2>
         <form action="/homestay/<%=homestay._id%>/reviews" class="mb-3 validated-form" method="POST" novalidate>
@@ -96,3 +98,9 @@
     </div>
 </div>
 
+<script>
+    const mapToken = '<%- process.env.MAPBOX_TOKEN %>';
+    const homestay = <%-JSON.stringify(homestay)%>;
+</script>
+
+<script src="/javascripts/showPageMap.js"></script>

@@ -20,11 +20,16 @@ const seedDB = async () => {
         const random1000 = Math.floor(Math.random() * 1000);
         const price = Math.floor(Math.random() * 20) + 10;
         const homestay = new Homestay({
+            // YOUR USER ID
             author: '62d56377488572fae6411695',
             location: `${cities[random1000].city}, ${cities[random1000].state}`,
             title: `${sample(descriptors)} ${sample(places)}`,
             description: 'Nothing for this homestay now',
             price,
+            geometry: { 
+              type: 'Point', 
+              coordinates: [ 120.4, 36.11667 ] 
+            },
             image: [
                     {
                       url: 'https://res.cloudinary.com/dwxvxsavp/image/upload/v1658307807/NiceHomestay/qecirqq9p63bzcyxcawn.jpg',
