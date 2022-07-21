@@ -1,11 +1,13 @@
 
 mapboxgl.accessToken = mapToken ;
 const map = new mapboxgl.Map({
-    container: 'map',
+    container: 'cluster-map',
     style: 'mapbox://styles/mapbox/light-v10',
     center: [-103.5917, 40.6699],
     zoom: 3
 });
+
+map.addControl(new mapboxgl.NavigationControl());
 
 map.on('load', () => {
     // Add a new source from our GeoJSON data and
@@ -35,17 +37,11 @@ map.on('load', () => {
             'circle-color': [
                 'step',
                 ['get', 'point_count'],
-                '#f4dacd',
-                5,
-                '#d9b4bc',
+                '#68a27c',
                 10,
-                '#ea9db1',
-                15,
-                '#8695b4',
-                20,
-                '#8f9e8b',
+                '#788860',
                 25,
-                '#8fb4ac'
+                '#5b6646',
             ],
             'circle-radius': [
                 'step',
@@ -77,7 +73,7 @@ map.on('load', () => {
         source: 'homestay',
         filter: ['!', ['has', 'point_count']],
         paint: {
-            'circle-color': '#11b4da',
+            'circle-color': '#cbd8b8',
             'circle-radius': 5,
             'circle-stroke-width': 1,
             'circle-stroke-color': '#fff'

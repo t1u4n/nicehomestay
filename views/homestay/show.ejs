@@ -49,7 +49,9 @@
         </div>
     </div>
     <div class="col-6">
-        <div id='map' style='width: 400px; height: 300px;'></div>
+        <div class="mb-3">
+            <div id='map'></div>
+        </div>
 
         <% if(currentUser) {%> 
         <h2>Leave a Review</h2>
@@ -70,7 +72,7 @@
                 </fieldset>
             </div>
             <div class="mb-3">
-                <label class="form-label" for="body">Review Text:</label>
+                <label class="form-label white" for="body">Review Text:</label>
                 <textarea class="form-control" name="review[body]" id="body" cols="30" rows="3" required></textarea>
                 <div class="valid-feedback">
                     Looks good!

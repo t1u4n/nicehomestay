@@ -1,14 +1,12 @@
 <% layout('/layouts/boilerplate') %>
 
-<div id="map" style="width: 100%; height: 500px"></div>
+<div id="cluster-map"></div>
 
 <h1>All Homestay</h1>
-<div>
-    <a href="/homestay/new">Add Homestay</a>
-</div>
+
 <ul>
     <% for(let h of homestay){%>
-        <div class="card" mb-3>
+        <div class="card mb-3">
             <div class="row">
                 <div class="col-md-4">
                     <% if(h.image.length){ %> 
