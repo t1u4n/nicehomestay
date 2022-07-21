@@ -1,4 +1,7 @@
-<% layout('/layouts/boilerplate') %> 
+<% layout('/layouts/boilerplate') %>
+
+<div id="map" style="width: 100%; height: 500px"></div>
+
 <h1>All Homestay</h1>
 <div>
     <a href="/homestay/new">Add Homestay</a>
@@ -28,4 +31,10 @@
         </div>
     <% }%>  
 </ul>
-<% layout('/layouts/boilerplate') %> 
+
+<script>
+    const mapToken = '<%- process.env.MAPBOX_TOKEN %>';
+    const homestay = {features: <%-JSON.stringify(homestay)%>};
+</script>
+
+<script src="/javascripts/clusterMap.js"></script>
